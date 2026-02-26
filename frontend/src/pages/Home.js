@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
-import { FaLeaf, FaChartLine, FaBrain, FaArrowRight, FaCheckCircle } from 'react-icons/fa';
+import { FaLeaf, FaChartLine, FaBrain, FaArrowRight } from 'react-icons/fa';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
