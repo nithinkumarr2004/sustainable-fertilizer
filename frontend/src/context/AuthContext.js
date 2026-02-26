@@ -28,18 +28,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/login', { email, password });
       const { token: newToken, user: userData } = response.data;
-      
+
       setToken(newToken);
       setUser(userData);
       localStorage.setItem('token', newToken);
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-      
+
       return { success: true };
     } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Login failed'
-      };
+      console.error('Login error:', error);
+      const message = error.response?.data?.message ||
+        (error.response?.data?.errors ? error.response.data.errors[0].msg : null) ||
+        'Connection error. Please try again.';
+      return { success: false, message };
     }
   };
 
@@ -47,18 +48,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await api.post('/auth/register', { name, email, password });
       const { token: newToken, user: userData } = response.data;
-      
+
       setToken(newToken);
       setUser(userData);
       localStorage.setItem('token', newToken);
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-      
+
       return { success: true };
     } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || 'Registration failed'
-      };
+      console.error('Registration error:', error);
+      const message = error.response?.data?.message ||
+        (error.response?.data?.errors ? error.response.data.errors[0].msg : null) ||
+        'Connection error. Please check if backend is running.';
+      return { success: false, message };
     }
   };
 
