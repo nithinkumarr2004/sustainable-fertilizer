@@ -9,7 +9,11 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || '*',
+  optionsSuccessStatus: 200
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -33,17 +37,17 @@ mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => {
-  console.log('✓ Connected to MongoDB');
-  console.log('✓ Database:', mongoose.connection.name);
-})
-.catch((err) => {
-  console.error('❌ MongoDB connection error:', err.message);
-  console.error('💡 Make sure MongoDB is running!');
-  console.error('   - Local: Start MongoDB service or run mongod');
-  console.error('   - Atlas: Check connection string in .env');
-  // Don't exit - let server start but requests will fail gracefully
-});
+  .then(() => {
+    console.log('✓ Connected to MongoDB');
+    console.log('✓ Database:', mongoose.connection.name);
+  })
+  .catch((err) => {
+    console.error('❌ MongoDB connection error:', err.message);
+    console.error('💡 Make sure MongoDB is running!');
+    console.error('   - Local: Start MongoDB service or run mongod');
+    console.error('   - Atlas: Check connection string in .env');
+    // Don't exit - let server start but requests will fail gracefully
+  });
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
