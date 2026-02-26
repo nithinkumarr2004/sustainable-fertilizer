@@ -12,6 +12,7 @@
         "logout": "Logout",
         "welcome": "Welcome",
         "language": "Language",
+        "go_to_tool": "Go to Prediction Tool",
         "get_started": "Get Started"
     },
     "home": {
