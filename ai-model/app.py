@@ -28,23 +28,6 @@ def home():
         "message": "AI Model API is running"
     })
 
-@app.route('/health')
-def health():
-    global fertilizer_model, quantity_model, health_model, label_encoder
-    models_status = {
-        "fertilizer_model": fertilizer_model is not None,
-        "quantity_model": quantity_model is not None,
-        "health_model": health_model is not None,
-        "label_encoder": label_encoder is not None
-    }
-    all_loaded = all(models_status.values())
-    return jsonify({
-        "status": "ready" if all_loaded else "error",
-        "models_loaded": models_status,
-        "base_dir": BASE_DIR,
-        "model_bundle_exists": os.path.exists(MODEL_BUNDLE_PATH)
-    }), 200 if all_loaded else 503
-
 def load_models():
     global fertilizer_model, quantity_model, health_model, label_encoder
     try:
