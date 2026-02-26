@@ -124,7 +124,7 @@ Create `backend/.env` file:
 
 ```env
 PORT=3000
-MONGODB_URI=mongodb://localhost:27017/fertilizer_db
+MONGODB_URI=YOUR_MONGO_URI
 JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
 JWT_EXPIRE=7d
 AI_MODEL_API_URL=http://localhost:5000
