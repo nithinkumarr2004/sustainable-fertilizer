@@ -21,6 +21,30 @@ label_encoder = None
 
 MODEL_BUNDLE_PATH = os.getenv('MODEL_BUNDLE_PATH', os.path.join(BASE_DIR, 'model.pkl'))
 
+@app.route('/')
+def home():
+    return jsonify({
+        "status": "online",
+        "message": "AI Model API is running"
+    })
+
+@app.route('/health')
+def health():
+    global fertilizer_model, quantity_model, health_model, label_encoder
+    models_status = {
+        "fertilizer_model": fertilizer_model is not None,
+        "quantity_model": quantity_model is not None,
+        "health_model": health_model is not None,
+        "label_encoder": label_encoder is not None
+    }
+    all_loaded = all(models_status.values())
+    return jsonify({
+        "status": "ready" if all_loaded else "error",
+        "models_loaded": models_status,
+        "base_dir": BASE_DIR,
+        "model_bundle_exists": os.path.exists(MODEL_BUNDLE_PATH)
+    }), 200 if all_loaded else 503
+
 def load_models():
     global fertilizer_model, quantity_model, health_model, label_encoder
     try:
@@ -346,6 +370,9 @@ def predict():
         return jsonify({'error': str(e)}), 400
 
 if __name__ == '__main__':
+    # Load models before starting the server
+    load_models()
+    
     port = int(os.environ.get('PORT', 5000))
     print(f"Starting Flask API server on port {port}...")
     # debug=False in production for security
