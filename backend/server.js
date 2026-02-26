@@ -23,8 +23,30 @@ app.use('/api/soil', require('./routes/soil'));
 app.use('/api/fertilizer', require('./routes/fertilizer'));
 
 // Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Server is running' });
+app.get('/api/health', async (req, res) => {
+  const { getFertilizerPrediction } = require('./services/aiService');
+  const mongoose = require('mongoose');
+  
+  let aiStatus = 'unknown';
+  try {
+    const axios = require('axios');
+    const AI_URL = process.env.AI_MODEL_API_URL || 'http://localhost:5000';
+    const response = await axios.get(`${AI_URL}/health`, { timeout: 2000 });
+    aiStatus = response.data.status === 'healthy' || response.data.status === 'ready' ? 'online' : 'error';
+  } catch (err) {
+    aiStatus = `offline (${err.message})`;
+  }
+
+  res.json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    environment: process.env.NODE_ENV || 'production',
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    ai_model_service: {
+      status: aiStatus,
+      url: process.env.AI_MODEL_API_URL || 'http://localhost:5000 (default)'
+    }
+  });
 });
 
 // Error handling middleware
