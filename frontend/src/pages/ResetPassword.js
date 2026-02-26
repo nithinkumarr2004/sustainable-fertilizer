@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { FaLock, FaLeaf, FaCheckCircle } from 'react-icons/fa';
 
 const ResetPassword = () => {
+  const { t } = useTranslation();
   const { token } = useParams();
   const [formData, setFormData] = useState({
     password: '',
@@ -16,9 +18,9 @@ const ResetPassword = () => {
 
   useEffect(() => {
     if (!token) {
-      setError('Invalid reset token');
+      setError(t('auth.error_invalid_token') || 'Invalid reset token');
     }
-  }, [token]);
+  }, [token, t]);
 
   const handleChange = (e) => {
     setFormData({
@@ -33,12 +35,12 @@ const ResetPassword = () => {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.error_match'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('auth.pass_requirement'));
       return;
     }
 
@@ -55,10 +57,10 @@ const ResetPassword = () => {
           navigate('/login');
         }, 3000);
       } else {
-        setError(response.data.message || 'Failed to reset password');
+        setError(response.data.message || t('auth.error_reset_failed') || 'Failed to reset password');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to reset password. The link may be invalid or expired.');
+      setError(err.response?.data?.message || t('auth.error_reset_failed') || 'Failed to reset password. The link may be invalid or expired.');
     }
 
     setLoading(false);
@@ -73,15 +75,15 @@ const ResetPassword = () => {
               <FaCheckCircle className="text-green-600 text-4xl" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Password Reset Successful!</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">{t('auth.reset_success_title')}</h2>
           <p className="text-gray-600 mb-6">
-            Your password has been reset successfully. You will be redirected to the login page shortly.
+            {t('auth.reset_success_desc')}
           </p>
           <Link
             to="/login"
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
           >
-            Go to Login
+            {t('auth.back_to_login')}
           </Link>
         </div>
       </div>
@@ -97,9 +99,9 @@ const ResetPassword = () => {
               <FaLeaf className="text-white text-3xl" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Reset Password</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t('auth.reset_title')}</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Enter your new password below
+            {t('auth.reset_subtitle')}
           </p>
         </div>
 
@@ -113,7 +115,7 @@ const ResetPassword = () => {
           <div className="space-y-4">
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                New Password
+                {t('auth.new_password')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -136,7 +138,7 @@ const ResetPassword = () => {
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm New Password
+                {t('auth.confirm_new_password')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -164,7 +166,7 @@ const ResetPassword = () => {
               disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Resetting...' : 'Reset Password'}
+              {loading ? t('auth.resetting') : t('auth.reset_title')}
             </button>
           </div>
 
@@ -173,7 +175,7 @@ const ResetPassword = () => {
               to="/login"
               className="text-sm font-medium text-primary-600 hover:text-primary-500"
             >
-              Back to Login
+              {t('auth.back_to_login')}
             </Link>
           </div>
         </form>

@@ -1,169 +1,73 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { FaLeaf, FaChartLine, FaBrain, FaArrowRight, FaCheckCircle } from 'react-icons/fa';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
+  const { t } = useTranslation();
 
   return (
-    <div>
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              Smart Fertilizer Optimization System
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-primary-100">
-              Optimize your fertilizer usage with AI-powered recommendations
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              {isAuthenticated ? (
-                <Link
-                  to="/prediction"
-                  className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-primary-50 transition duration-300 flex items-center justify-center space-x-2"
-                >
-                  <span>Go to Prediction Tool</span>
-                  <FaArrowRight />
-                </Link>
-              ) : (
-                <Link
-                  to="/register"
-                  className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-primary-50 transition duration-300 flex items-center justify-center space-x-2"
-                >
-                  <span>Get Started</span>
-                  <FaArrowRight />
-                </Link>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-[80vh] flex items-center bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white py-20 relative overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-primary-400 opacity-10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-96 h-96 bg-green-400 opacity-10 rounded-full blur-3xl"></div>
 
-      {/* Features Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-            Why Choose Our System?
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-primary-50 p-6 rounded-lg shadow-md">
-              <div className="flex items-center justify-center w-16 h-16 bg-primary-600 rounded-full mb-4">
-                <FaBrain className="text-white text-2xl" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">AI-Powered Analysis</h3>
-              <p className="text-gray-600">
-                Advanced machine learning algorithms analyze your soil data to provide accurate fertilizer recommendations.
-              </p>
-            </div>
-            <div className="bg-primary-50 p-6 rounded-lg shadow-md">
-              <div className="flex items-center justify-center w-16 h-16 bg-primary-600 rounded-full mb-4">
-                <FaChartLine className="text-white text-2xl" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Data Analytics</h3>
-              <p className="text-gray-600">
-                Track your soil health over time with detailed analytics and visualization tools.
-              </p>
-            </div>
-            <div className="bg-primary-50 p-6 rounded-lg shadow-md">
-              <div className="flex items-center justify-center w-16 h-16 bg-primary-600 rounded-full mb-4">
-                <FaLeaf className="text-white text-2xl" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Sustainable Farming</h3>
-              <p className="text-gray-600">
-                Optimize fertilizer usage to reduce costs and environmental impact while maximizing crop yield.
-              </p>
-            </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+        <div className="text-center max-w-4xl mx-auto">
+          <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary-500/20 text-primary-100 border border-primary-400/30 mb-8 backdrop-blur-sm animate-pulse">
+            <FaLeaf className="mr-2 text-green-400" />
+            <span className="text-sm font-medium tracking-wide uppercase">{t('common.app_name')}</span>
           </div>
-        </div>
-      </section>
 
-      {/* How It Works */}
-      <section className="py-16 bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-            How It Works
-          </h2>
-          <div className="grid md:grid-cols-4 gap-6">
-            <div className="text-center">
-              <div className="bg-primary-600 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                1
-              </div>
-              <h3 className="font-semibold mb-2">Input Soil Data</h3>
-              <p className="text-gray-600 text-sm">
-                Enter your soil parameters: N, P, K, pH, moisture, temperature, and crop type.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-primary-600 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                2
-              </div>
-              <h3 className="font-semibold mb-2">AI Analysis</h3>
-              <p className="text-gray-600 text-sm">
-                Our AI model analyzes the data using advanced machine learning algorithms.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-primary-600 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                3
-              </div>
-              <h3 className="font-semibold mb-2">Get Recommendations</h3>
-              <p className="text-gray-600 text-sm">
-                Receive detailed fertilizer type, quantity, and improvement suggestions.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="bg-primary-600 text-white w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4 text-xl font-bold">
-                4
-              </div>
-              <h3 className="font-semibold mb-2">Track Progress</h3>
-              <p className="text-gray-600 text-sm">
-                Monitor your soil health over time and optimize your farming practices.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+          <h1 className="text-4xl md:text-7xl font-extrabold mb-8 leading-tight tracking-tight">
+            <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white to-primary-100">
+              {t('home.hero_title')}
+            </span>
+          </h1>
 
-      {/* Benefits Section */}
-      <section className="py-16 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">
-            Benefits
-          </h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="flex items-start space-x-4">
-              <FaCheckCircle className="text-primary-600 text-2xl mt-1" />
-              <div>
-                <h3 className="font-semibold mb-1">Cost Reduction</h3>
-                <p className="text-gray-600">Reduce fertilizer costs by up to 30% through optimized application.</p>
-              </div>
+          <p className="text-xl md:text-2xl mb-12 text-blue-100/90 leading-relaxed font-light px-4">
+            {t('home.hero_subtitle')}
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            {isAuthenticated ? (
+              <Link
+                to="/prediction"
+                className="group relative bg-white text-primary-700 px-10 py-4 rounded-xl font-bold text-lg hover:bg-primary-50 transition duration-300 shadow-2xl hover:shadow-primary-500/20 flex items-center space-x-3 transform hover:-translate-y-1"
+              >
+                <span>{t('common.go_to_tool')}</span>
+                <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            ) : (
+              <Link
+                to="/login"
+                className="group relative bg-white text-primary-700 px-10 py-4 rounded-xl font-bold text-lg hover:bg-primary-50 transition duration-300 shadow-2xl hover:shadow-primary-500/20 flex items-center space-x-3 transform hover:-translate-y-1"
+              >
+                <span>{t('common.get_started')}</span>
+                <FaArrowRight className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            )}
+          </div>
+
+          {/* Trust badges/minimal info */}
+          <div className="mt-20 flex flex-wrap justify-center gap-8 md:gap-16 opacity-60">
+            <div className="flex items-center space-x-2">
+              <FaBrain className="text-2xl" />
+              <span className="text-sm font-medium uppercase tracking-widest">{t('home.ai_powered')}</span>
             </div>
-            <div className="flex items-start space-x-4">
-              <FaCheckCircle className="text-primary-600 text-2xl mt-1" />
-              <div>
-                <h3 className="font-semibold mb-1">Increased Yield</h3>
-                <p className="text-gray-600">Maximize crop yield with precise nutrient management.</p>
-              </div>
+            <div className="flex items-center space-x-2">
+              <FaChartLine className="text-2xl" />
+              <span className="text-sm font-medium uppercase tracking-widest">{t('home.data_analytics')}</span>
             </div>
-            <div className="flex items-start space-x-4">
-              <FaCheckCircle className="text-primary-600 text-2xl mt-1" />
-              <div>
-                <h3 className="font-semibold mb-1">Environmental Protection</h3>
-                <p className="text-gray-600">Minimize environmental impact through sustainable practices.</p>
-              </div>
-            </div>
-            <div className="flex items-start space-x-4">
-              <FaCheckCircle className="text-primary-600 text-2xl mt-1" />
-              <div>
-                <h3 className="font-semibold mb-1">Soil Health</h3>
-                <p className="text-gray-600">Improve and maintain optimal soil health scores over time.</p>
-              </div>
+            <div className="flex items-center space-x-2">
+              <FaLeaf className="text-2xl" />
+              <span className="text-sm font-medium uppercase tracking-widest">{t('home.sustainable')}</span>
             </div>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

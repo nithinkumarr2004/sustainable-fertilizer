@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaLeaf, FaExclamationTriangle, FaCheckCircle, FaInfoCircle } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { FaLeaf, FaExclamationTriangle, FaCheckCircle, FaInfoCircle, FaMapMarkerAlt, FaSync, FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
 import api from '../services/api';
 
 const PredictionTool = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     nitrogen: '',
     phosphorus: '',
@@ -15,8 +17,11 @@ const PredictionTool = () => {
     cropType: 'Wheat'
   });
   const [loading, setLoading] = useState(false);
+  const [fetchingLocation, setFetchingLocation] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(null); // null, 'liked', 'disliked'
   const [result, setResult] = useState(null);
   const [error, setError] = useState('');
+  const [detectedLocation, setDetectedLocation] = useState('');
 
   const cropTypes = ['Wheat', 'Rice', 'Corn', 'Soybean', 'Cotton', 'Tomato', 'Potato', 'Sugarcane'];
 
@@ -28,15 +33,73 @@ const PredictionTool = () => {
     setError('');
   };
 
+  const handleAutoDetect = () => {
+    if (!navigator.geolocation) {
+      setError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    setFetchingLocation(true);
+    setError('');
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const response = await api.post('/fertilizer/fetch-location-data', {
+            lat: latitude,
+            lon: longitude
+          });
+
+          if (response.data.success) {
+            const autoData = response.data.data;
+            setFormData(prev => ({
+              ...prev,
+              nitrogen: autoData.nitrogen,
+              phosphorus: autoData.phosphorus,
+              potassium: autoData.potassium,
+              ph: autoData.ph,
+              moisture: autoData.moisture,
+              temperature: autoData.temperature
+            }));
+            setDetectedLocation(autoData.locationName);
+          }
+        } catch (err) {
+          setError('Failed to fetch location-based soil data. Please try entering manually.');
+          console.error(err);
+        } finally {
+          setFetchingLocation(false);
+        }
+      },
+      (err) => {
+        setFetchingLocation(false);
+        setError('Location access denied. Please enable location permissions or enter data manually.');
+      },
+      { timeout: 10000 }
+    );
+  };
+
+  const handleFeedback = async (isHelpful) => {
+    try {
+      await api.patch(`/fertilizer/${result._id}/feedback`, {
+        isHelpful
+      });
+      setFeedbackSubmitted(isHelpful ? 'liked' : 'disliked');
+    } catch (err) {
+      console.error('Failed to submit feedback', err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    setDetectedLocation('');
     setResult(null);
 
     try {
       const response = await api.post('/fertilizer/recommend', formData);
-      
+
       if (response.data.success) {
         setResult(response.data.data || response.data.prediction);
         // Scroll to results
@@ -72,15 +135,44 @@ const PredictionTool = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Optimized Fertilizer Prediction Tool</h1>
-          <p className="text-gray-600">Enter your soil parameters to get AI-powered fertilizer recommendations</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('prediction.title')}</h1>
+          <p className="text-gray-600">{t('prediction.subtitle')}</p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Form */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Soil Parameters</h2>
-            
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
+              <h2 className="text-2xl font-bold text-gray-800">{t('prediction.form_title')}</h2>
+              <button
+                type="button"
+                onClick={handleAutoDetect}
+                disabled={fetchingLocation}
+                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-md shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
+              >
+                {fetchingLocation ? (
+                  <FaSync className="animate-spin mr-2" />
+                ) : (
+                  <FaMapMarkerAlt className="mr-2" />
+                )}
+                {fetchingLocation ? t('prediction.detecting') : t('prediction.auto_detect')}
+              </button>
+            </div>
+
+            {detectedLocation && (
+              <div className="mb-6 p-3 bg-blue-50 border border-blue-100 rounded-md flex items-center space-x-2 text-blue-700 animate-fade-in shadow-sm">
+                <FaMapMarkerAlt className="flex-shrink-0 text-blue-500" />
+                <span className="text-sm font-medium">{t('prediction.detected_location')}: <span className="font-bold underline">{detectedLocation}</span></span>
+                <button
+                  onClick={() => setDetectedLocation('')}
+                  className="ml-auto text-blue-400 hover:text-blue-600 transition-colors"
+                  title="Clear location"
+                >
+                  &times;
+                </button>
+              </div>
+            )}
+
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6 flex items-start space-x-2">
                 <FaExclamationTriangle className="mt-1" />
@@ -92,7 +184,7 @@ const PredictionTool = () => {
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="nitrogen" className="block text-sm font-medium text-gray-700 mb-1">
-                    Nitrogen (N) <span className="text-red-500">*</span>
+                    {t('prediction.nitrogen')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -112,7 +204,7 @@ const PredictionTool = () => {
 
                 <div>
                   <label htmlFor="phosphorus" className="block text-sm font-medium text-gray-700 mb-1">
-                    Phosphorus (P) <span className="text-red-500">*</span>
+                    {t('prediction.phosphorus')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -132,7 +224,7 @@ const PredictionTool = () => {
 
                 <div>
                   <label htmlFor="potassium" className="block text-sm font-medium text-gray-700 mb-1">
-                    Potassium (K) <span className="text-red-500">*</span>
+                    {t('prediction.potassium')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -152,7 +244,7 @@ const PredictionTool = () => {
 
                 <div>
                   <label htmlFor="ph" className="block text-sm font-medium text-gray-700 mb-1">
-                    pH Level <span className="text-red-500">*</span>
+                    {t('prediction.ph')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -172,7 +264,7 @@ const PredictionTool = () => {
 
                 <div>
                   <label htmlFor="moisture" className="block text-sm font-medium text-gray-700 mb-1">
-                    Moisture (%) <span className="text-red-500">*</span>
+                    {t('prediction.moisture')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -192,7 +284,7 @@ const PredictionTool = () => {
 
                 <div>
                   <label htmlFor="temperature" className="block text-sm font-medium text-gray-700 mb-1">
-                    Temperature (°C) <span className="text-red-500">*</span>
+                    {t('prediction.temperature')} <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="number"
@@ -213,7 +305,7 @@ const PredictionTool = () => {
 
               <div>
                 <label htmlFor="cropType" className="block text-sm font-medium text-gray-700 mb-1">
-                  Crop Type <span className="text-red-500">*</span>
+                  {t('prediction.crop_type')} <span className="text-red-500">*</span>
                 </label>
                 <select
                   id="cropType"
@@ -224,7 +316,7 @@ const PredictionTool = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                 >
                   {cropTypes.map(crop => (
-                    <option key={crop} value={crop}>{crop}</option>
+                    <option key={crop} value={crop}>{t(`crops.${crop}`)}</option>
                   ))}
                 </select>
               </div>
@@ -237,12 +329,12 @@ const PredictionTool = () => {
                 {loading ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    <span>Analyzing...</span>
+                    <span>{t('prediction.analyzing')}</span>
                   </>
                 ) : (
                   <>
                     <FaLeaf />
-                    <span>Get Recommendation</span>
+                    <span>{t('prediction.submit')}</span>
                   </>
                 )}
               </button>
@@ -251,15 +343,15 @@ const PredictionTool = () => {
 
           {/* Info Section */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">How It Works</h2>
+            <h2 className="text-2xl font-bold mb-6 text-gray-800">{t('home.how_it_works')}</h2>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <div className="bg-primary-100 p-2 rounded-full">
                   <span className="text-primary-600 font-bold">1</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">Enter Soil Data</h3>
-                  <p className="text-gray-600 text-sm">Fill in all required parameters accurately for best results.</p>
+                  <h3 className="font-semibold mb-1">{t('home.step1_title')}</h3>
+                  <p className="text-gray-600 text-sm">{t('home.step1_desc')}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
@@ -267,8 +359,8 @@ const PredictionTool = () => {
                   <span className="text-primary-600 font-bold">2</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">AI Analysis</h3>
-                  <p className="text-gray-600 text-sm">Our ML model analyzes your data and generates recommendations.</p>
+                  <h3 className="font-semibold mb-1">{t('home.step2_title')}</h3>
+                  <p className="text-gray-600 text-sm">{t('home.step2_desc')}</p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
@@ -276,8 +368,8 @@ const PredictionTool = () => {
                   <span className="text-primary-600 font-bold">3</span>
                 </div>
                 <div>
-                  <h3 className="font-semibold mb-1">Get Results</h3>
-                  <p className="text-gray-600 text-sm">Receive detailed recommendations with fertilizer type, quantity, and suggestions.</p>
+                  <h3 className="font-semibold mb-1">{t('home.step3_title')}</h3>
+                  <p className="text-gray-600 text-sm">{t('home.step3_desc')}</p>
                 </div>
               </div>
             </div>
@@ -286,12 +378,12 @@ const PredictionTool = () => {
               <div className="flex items-start space-x-2">
                 <FaInfoCircle className="text-blue-600 mt-1" />
                 <div>
-                  <h3 className="font-semibold text-blue-900 mb-1">Tips for Best Results</h3>
+                  <h3 className="font-semibold text-blue-900 mb-1">{t('home.benefits')}</h3>
                   <ul className="text-sm text-blue-800 space-y-1">
-                    <li>• Use recent soil test results</li>
-                    <li>• Measure moisture and temperature at the same time</li>
-                    <li>• Select the correct crop type</li>
-                    <li>• Regular testing improves accuracy over time</li>
+                    <li>• {t('about.tip_timing')}</li>
+                    <li>• {t('about.tip_quantity')}</li>
+                    <li>• {t('prediction.crop_type')}</li>
+                    <li>• {t('about.tip_moisture')}</li>
                   </ul>
                 </div>
               </div>
@@ -304,22 +396,22 @@ const PredictionTool = () => {
           <div id="results" className="mt-8 bg-white rounded-lg shadow-md p-6">
             <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center space-x-2">
               <FaCheckCircle className="text-green-600" />
-              <span>Recommendation Results</span>
+              <span>{t('results.title')}</span>
             </h2>
 
             <div className="grid md:grid-cols-3 gap-6 mb-8">
               <div className="bg-primary-50 p-6 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-600 mb-2">Recommended Fertilizer Type</h3>
+                <h3 className="text-sm font-medium text-gray-600 mb-2">{t('results.fertilizer_type')}</h3>
                 <p className="text-3xl font-bold text-primary-600">{result.fertilizerType || result.fertilizer_type}</p>
               </div>
               <div className="bg-blue-50 p-6 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-600 mb-2">Quantity Required</h3>
+                <h3 className="text-sm font-medium text-gray-600 mb-2">{t('results.quantity')}</h3>
                 <p className="text-3xl font-bold text-blue-600">
-                  {result.quantityKgPerAcre || result.quantity_kg_per_acre} <span className="text-lg">kg/acre</span>
+                  {result.quantityKgPerAcre || result.quantity_kg_per_acre} <span className="text-lg">{t('results.kg_acre')}</span>
                 </p>
               </div>
               <div className={`p-6 rounded-lg ${getHealthScoreColor(result.soilHealthScore || result.soil_health_score).includes('green') ? 'bg-green-50' : getHealthScoreColor(result.soilHealthScore || result.soil_health_score).includes('yellow') ? 'bg-yellow-50' : 'bg-red-50'}`}>
-                <h3 className="text-sm font-medium text-gray-600 mb-2">Soil Health Score</h3>
+                <h3 className="text-sm font-medium text-gray-600 mb-2">{t('results.health_score')}</h3>
                 <p className={`text-3xl font-bold ${getHealthScoreColor(result.soilHealthScore || result.soil_health_score)}`}>
                   {result.soilHealthScore || result.soil_health_score}
                 </p>
@@ -329,7 +421,7 @@ const PredictionTool = () => {
             {/* Deficiency Analysis */}
             {(result.deficiencyAnalysis || result.deficiency_analysis) && (
               <div className="mb-8">
-                <h3 className="text-xl font-bold mb-4 text-gray-800">Deficiency Analysis</h3>
+                <h3 className="text-xl font-bold mb-4 text-gray-800">{t('results.deficiency_analysis')}</h3>
                 <div className="grid md:grid-cols-2 gap-4">
                   {(result.deficiencyAnalysis || result.deficiency_analysis).map((def, index) => (
                     <div key={index} className={`p-4 rounded-lg ${getSeverityColor(def.severity)}`}>
@@ -350,7 +442,7 @@ const PredictionTool = () => {
             {/* Improvement Suggestions */}
             {(result.improvementSuggestions || result.improvement_suggestions) && (
               <div>
-                <h3 className="text-xl font-bold mb-4 text-gray-800">Improvement Suggestions</h3>
+                <h3 className="text-xl font-bold mb-4 text-gray-800">{t('results.improvement_suggestions')}</h3>
                 <div className="space-y-2">
                   {(result.improvementSuggestions || result.improvement_suggestions).map((suggestion, index) => (
                     <div key={index} className="flex items-start space-x-2 p-3 bg-gray-50 rounded-lg">
@@ -369,6 +461,36 @@ const PredictionTool = () => {
               >
                 View History
               </button>
+            </div>
+
+            {/* Feedback Section */}
+            <div className="mt-8 pt-8 border-t border-gray-100">
+              <div className="flex flex-col items-center">
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">{t('results.feedback_question')}</h3>
+                {feedbackSubmitted ? (
+                  <div className="flex items-center space-x-2 text-green-600 animate-bounce">
+                    <FaCheckCircle />
+                    <span className="font-medium">{t('results.feedback_success')}</span>
+                  </div>
+                ) : (
+                  <div className="flex space-x-4">
+                    <button
+                      onClick={() => handleFeedback(true)}
+                      className="flex items-center space-x-2 px-6 py-2 rounded-full border border-gray-200 hover:border-green-500 hover:text-green-600 transition-all font-medium"
+                    >
+                      <FaThumbsUp />
+                      <span>{t('results.helpful')}</span>
+                    </button>
+                    <button
+                      onClick={() => handleFeedback(false)}
+                      className="flex items-center space-x-2 px-6 py-2 rounded-full border border-gray-200 hover:border-red-500 hover:text-red-600 transition-all font-medium"
+                    >
+                      <FaThumbsDown />
+                      <span>{t('results.not_useful')}</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

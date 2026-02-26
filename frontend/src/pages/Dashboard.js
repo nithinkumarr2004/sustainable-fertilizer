@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { FaLeaf, FaChartLine, FaArrowRight, FaHistory, FaCalculator } from 'react-icons/fa';
 import api from '../services/api';
 
 const Dashboard = () => {
+  const { t } = useTranslation();
   const [stats, setStats] = useState({
     totalRecommendations: 0,
     averageHealthScore: 0,
@@ -25,13 +27,13 @@ const Dashboard = () => {
       ]);
 
       const recommendations = historyRes.data.data || [];
-      
+
       setStats({
         totalRecommendations: recommendations.length,
         averageHealthScore: recommendations.length > 0
           ? (recommendations.reduce((sum, r) => sum + r.soilHealthScore, 0) / recommendations.length).toFixed(2)
           : 0,
-        totalCostSavings: (recommendations.length * 50).toFixed(2), // Estimated savings
+        totalCostSavings: (recommendations.length * 4000).toFixed(2), // Estimated savings in INR (avg ₹4000 per acre saved)
         recentRecommendations: recommendations.slice(0, 5)
       });
 
@@ -75,8 +77,8 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Welcome to your fertilizer optimization dashboard</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('common.dashboard')}</h1>
+          <p className="text-gray-600">{t('dashboard.welcome_msg')}</p>
         </div>
 
         {/* Stats Cards */}
@@ -84,7 +86,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm mb-1">Total Recommendations</p>
+                <p className="text-gray-500 text-sm mb-1">{t('dashboard.total_recommendations')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.totalRecommendations}</p>
               </div>
               <div className="bg-primary-100 p-3 rounded-full">
@@ -96,7 +98,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm mb-1">Avg Health Score</p>
+                <p className="text-gray-500 text-sm mb-1">{t('dashboard.avg_health_score')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.averageHealthScore}</p>
               </div>
               <div className="bg-blue-100 p-3 rounded-full">
@@ -108,11 +110,11 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm mb-1">Est. Cost Savings</p>
-                <p className="text-3xl font-bold text-gray-900">${stats.totalCostSavings}</p>
+                <p className="text-gray-500 text-sm mb-1">{t('dashboard.cost_savings')}</p>
+                <p className="text-3xl font-bold text-gray-900">₹{stats.totalCostSavings}</p>
               </div>
               <div className="bg-green-100 p-3 rounded-full">
-                <span className="text-green-600 text-2xl font-bold">$</span>
+                <span className="text-green-600 text-2xl font-bold">₹</span>
               </div>
             </div>
           </div>
@@ -120,7 +122,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-gray-500 text-sm mb-1">Recent Reports</p>
+                <p className="text-gray-500 text-sm mb-1">{t('dashboard.recent_reports')}</p>
                 <p className="text-3xl font-bold text-gray-900">{stats.recentRecommendations.length}</p>
               </div>
               <div className="bg-purple-100 p-3 rounded-full">
@@ -133,7 +135,7 @@ const Dashboard = () => {
         {/* Charts */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Soil Health Score Trend</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">{t('dashboard.health_trend')}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -141,13 +143,13 @@ const Dashboard = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="healthScore" stroke="#22c55e" strokeWidth={2} name="Health Score" />
+                <Line type="monotone" dataKey="healthScore" stroke="#22c55e" strokeWidth={2} name={t('results.health_score')} />
               </LineChart>
             </ResponsiveContainer>
           </div>
 
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Fertilizer Quantity Trend</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">{t('dashboard.quantity_trend')}</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -155,7 +157,7 @@ const Dashboard = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Bar dataKey="quantity" fill="#3b82f6" name="Quantity (kg/acre)" />
+                <Bar dataKey="quantity" fill="#3b82f6" name={`${t('results.quantity')} (${t('results.kg_acre')})`} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -164,7 +166,7 @@ const Dashboard = () => {
         {pieData.length > 0 && (
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">Fertilizer Type Distribution</h2>
+              <h2 className="text-xl font-bold mb-4 text-gray-800">{t('dashboard.type_distribution')}</h2>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -196,13 +198,13 @@ const Dashboard = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">Get New Recommendation</h3>
-                <p className="text-gray-600 mb-4">Use our AI-powered tool to get fertilizer recommendations</p>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">{t('dashboard.get_new')}</h3>
+                <p className="text-gray-600 mb-4">{t('dashboard.get_new_desc')}</p>
               </div>
               <FaCalculator className="text-primary-600 text-3xl" />
             </div>
             <div className="flex items-center text-primary-600 font-semibold mt-4">
-              <span>Try Now</span>
+              <span>{t('dashboard.try_now')}</span>
               <FaArrowRight className="ml-2" />
             </div>
           </Link>
@@ -213,13 +215,13 @@ const Dashboard = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-xl font-bold mb-2 text-gray-800">View History</h3>
-                <p className="text-gray-600 mb-4">Browse your past recommendations and soil data</p>
+                <h3 className="text-xl font-bold mb-2 text-gray-800">{t('common.history')}</h3>
+                <p className="text-gray-600 mb-4">{t('dashboard.view_history_desc')}</p>
               </div>
               <FaHistory className="text-primary-600 text-3xl" />
             </div>
             <div className="flex items-center text-primary-600 font-semibold mt-4">
-              <span>View All</span>
+              <span>{t('dashboard.view_all')}</span>
               <FaArrowRight className="ml-2" />
             </div>
           </Link>
@@ -228,25 +230,25 @@ const Dashboard = () => {
         {/* Recent Recommendations */}
         {stats.recentRecommendations.length > 0 && (
           <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Recent Recommendations</h2>
+            <h2 className="text-xl font-bold mb-4 text-gray-800">{t('dashboard.recent_reports')}</h2>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
+                      {t('dashboard.date')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Crop Type
+                      {t('prediction.crop_type')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Fertilizer Type
+                      {t('results.fertilizer_type')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Quantity
+                      {t('dashboard.quantity_table')}
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Health Score
+                      {t('dashboard.health_score_table')}
                     </th>
                   </tr>
                 </thead>
@@ -257,7 +259,7 @@ const Dashboard = () => {
                         {new Date(rec.createdAt).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {rec.inputData?.cropType || 'N/A'}
+                        {rec.inputData?.cropType || rec.soilData?.cropType || 'N/A'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary-100 text-primary-800">
@@ -265,7 +267,7 @@ const Dashboard = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {rec.quantityKgPerAcre} kg/acre
+                        {rec.quantityKgPerAcre} {t('results.kg_acre')}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm">
                         <span className={`font-semibold ${rec.soilHealthScore >= 70 ? 'text-green-600' : rec.soilHealthScore >= 50 ? 'text-yellow-600' : 'text-red-600'}`}>
@@ -282,7 +284,7 @@ const Dashboard = () => {
                 to="/history"
                 className="text-primary-600 hover:text-primary-700 font-semibold"
               >
-                View All History →
+                {t('dashboard.view_all')} →
               </Link>
             </div>
           </div>

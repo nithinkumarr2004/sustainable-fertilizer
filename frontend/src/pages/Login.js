@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { FaEnvelope, FaLock, FaLeaf } from 'react-icons/fa';
 
 const Login = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -31,7 +33,7 @@ const Login = () => {
     if (result.success) {
       navigate('/dashboard');
     } else {
-      setError(result.message || 'Login failed. Please try again.');
+      setError(result.message || t('auth.error_invalid'));
     }
 
     setLoading(false);
@@ -46,9 +48,9 @@ const Login = () => {
               <FaLeaf className="text-white text-3xl" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Sign In</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t('auth.signin_title')}</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Access your fertilizer optimization dashboard
+            {t('auth.signin_subtitle')}
           </p>
         </div>
 
@@ -62,7 +64,7 @@ const Login = () => {
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
+                {t('auth.email')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -84,7 +86,7 @@ const Login = () => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
+                {t('auth.password')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -111,20 +113,20 @@ const Login = () => {
               disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? t('auth.signing_in') : t('common.login')}
             </button>
           </div>
 
           <div className="text-center space-y-2">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              {t('auth.no_account')}{' '}
               <Link to="/register" className="font-medium text-primary-600 hover:text-primary-500">
-                Sign up here
+                {t('auth.signup_here')}
               </Link>
             </p>
             <p className="text-sm">
               <Link to="/forgot-password" className="font-medium text-primary-600 hover:text-primary-500">
-                Forgot your password?
+                {t('auth.forgot_password')}
               </Link>
             </p>
           </div>

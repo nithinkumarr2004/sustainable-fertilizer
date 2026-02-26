@@ -45,7 +45,15 @@ exports.recommendFertilizer = async (req, res) => {
       soilHealthScore: prediction.soil_health_score,
       deficiencyAnalysis: prediction.deficiency_analysis,
       improvementSuggestions: prediction.improvement_suggestions,
-      inputData: prediction.input_data
+      inputData: {
+        nitrogen: prediction.input_data.nitrogen,
+        phosphorus: prediction.input_data.phosphorus,
+        potassium: prediction.input_data.potassium,
+        ph: prediction.input_data.ph,
+        moisture: prediction.input_data.moisture,
+        temperature: prediction.input_data.temperature,
+        cropType: prediction.input_data.crop_type
+      }
     });
 
     const populatedRecommendation = await FertilizerRecommendation.findById(recommendation._id)
@@ -97,10 +105,34 @@ exports.getFertilizerById = async (req, res) => {
   }
 };
 
+// @desc    Submit feedback for a recommendation
+// @route   PATCH /api/fertilizer/:id/feedback
+// @access  Private
+exports.submitFeedback = async (req, res) => {
+  try {
+    const { isHelpful, feedbackText } = req.body;
 
+    let recommendation = await FertilizerRecommendation.findById(req.params.id);
 
+    if (!recommendation) {
+      return res.status(404).json({ success: false, message: 'Recommendation not found' });
+    }
 
+    // Check if user owns the recommendation
+    if (recommendation.user.toString() !== req.user._id.toString()) {
+      return res.status(401).json({ success: false, message: 'Not authorized' });
+    }
 
+    recommendation.feedback = {
+      isHelpful,
+      feedbackText,
+      updatedAt: Date.now()
+    };
 
+    await recommendation.save();
 
-
+    res.json({ success: true, data: recommendation });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

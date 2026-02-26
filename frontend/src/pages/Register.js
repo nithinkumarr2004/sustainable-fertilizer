@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { FaEnvelope, FaLock, FaUser, FaLeaf } from 'react-icons/fa';
 
 const Register = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -28,12 +30,12 @@ const Register = () => {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.error_match'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t('auth.pass_requirement'));
       return;
     }
 
@@ -44,7 +46,7 @@ const Register = () => {
     if (result.success) {
       navigate('/dashboard');
     } else {
-      setError(result.message || 'Registration failed. Please try again.');
+      setError(result.message || t('auth.error_reg_failed'));
     }
 
     setLoading(false);
@@ -59,9 +61,9 @@ const Register = () => {
               <FaLeaf className="text-white text-3xl" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t('auth.signup_title')}</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Start optimizing your fertilizer usage today
+            {t('auth.signup_subtitle')}
           </p>
         </div>
 
@@ -75,7 +77,7 @@ const Register = () => {
           <div className="space-y-4">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                Full Name
+                {t('auth.full_name')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -97,7 +99,7 @@ const Register = () => {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
+                {t('auth.email')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -119,7 +121,7 @@ const Register = () => {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
+                {t('auth.password')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -137,12 +139,12 @@ const Register = () => {
                   placeholder="••••••••"
                 />
               </div>
-              <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
+              <p className="mt-1 text-xs text-gray-500">{t('auth.pass_requirement')}</p>
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
+                {t('auth.confirm_password')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -169,15 +171,15 @@ const Register = () => {
               disabled={loading}
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Creating account...' : 'Sign Up'}
+              {loading ? t('auth.creating_account') : t('common.signup')}
             </button>
           </div>
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{' '}
+              {t('auth.have_account')}{' '}
               <Link to="/login" className="font-medium text-primary-600 hover:text-primary-500">
-                Sign in here
+                {t('auth.signin_here')}
               </Link>
             </p>
           </div>

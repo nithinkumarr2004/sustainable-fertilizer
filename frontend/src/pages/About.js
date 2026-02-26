@@ -1,127 +1,87 @@
 import React from 'react';
-import { FaLeaf, FaFlask, FaSeedling, FaWater, FaSun, FaThermometerHalf } from 'react-icons/fa';
+import { useTranslation } from 'react-i18next';
+import { FaLeaf, FaFlask, FaSeedling, FaWater, FaThermometerHalf } from 'react-icons/fa';
 
 const About = () => {
+  const { t } = useTranslation();
+
   const fertilizerInfo = [
     {
-      title: 'Nitrogen (N) Fertilizers',
+      title: t('about.n_title'),
       icon: <FaFlask className="text-3xl text-blue-600" />,
-      description: 'Nitrogen is essential for plant growth and chlorophyll production. Common sources include urea, ammonium nitrate, and ammonium sulfate. Nitrogen promotes leaf and stem growth.',
-      keyPoints: [
-        'Essential for protein synthesis',
-        'Promotes vegetative growth',
-        'Deficiency causes yellowing leaves',
-        'Most common nutrient deficiency'
-      ]
+      description: t('about.n_desc'),
+      keyPoints: t('about.n_points', { returnObjects: true })
     },
     {
-      title: 'Phosphorus (P) Fertilizers',
+      title: t('about.p_title'),
       icon: <FaSeedling className="text-3xl text-purple-600" />,
-      description: 'Phosphorus is crucial for root development, flowering, and fruit production. It plays a key role in energy transfer within plants. Common sources include superphosphate and triple superphosphate.',
-      keyPoints: [
-        'Critical for root development',
-        'Essential for flowering and fruiting',
-        'Improves crop quality',
-        'Important for seed formation'
-      ]
+      description: t('about.p_desc'),
+      keyPoints: t('about.p_points', { returnObjects: true })
     },
     {
-      title: 'Potassium (K) Fertilizers',
+      title: t('about.k_title'),
       icon: <FaLeaf className="text-3xl text-green-600" />,
-      description: 'Potassium helps regulate water balance, improves disease resistance, and enhances fruit quality. Common sources include muriate of potash (KCl) and sulfate of potash.',
-      keyPoints: [
-        'Regulates water balance',
-        'Improves disease resistance',
-        'Enhances fruit quality',
-        'Important for photosynthesis'
-      ]
+      description: t('about.k_desc'),
+      keyPoints: t('about.k_points', { returnObjects: true })
     },
     {
-      title: 'Organic Fertilizers',
+      title: t('about.organic_title'),
       icon: <FaSeedling className="text-3xl text-brown-600" />,
-      description: 'Organic fertilizers are derived from natural sources like compost, manure, and bone meal. They improve soil structure and provide slow-release nutrients while being environmentally friendly.',
-      keyPoints: [
-        'Improves soil structure',
-        'Slow-release nutrients',
-        'Environmentally friendly',
-        'Enhances microbial activity'
-      ]
+      description: t('about.organic_desc'),
+      keyPoints: t('about.organic_points', { returnObjects: true })
     },
     {
-      title: 'Mixed/Compound Fertilizers',
+      title: t('about.mixed_title'),
       icon: <FaFlask className="text-3xl text-indigo-600" />,
-      description: 'Mixed fertilizers contain two or more primary nutrients (N, P, K) in varying ratios. They provide balanced nutrition and are convenient for farmers who need multiple nutrients.',
-      keyPoints: [
-        'Balanced nutrition',
-        'Convenient application',
-        'Cost-effective',
-        'Customizable NPK ratios'
-      ]
+      description: t('about.mixed_desc'),
+      keyPoints: t('about.mixed_points', { returnObjects: true })
     },
     {
-      title: 'pH and Soil Acidity',
+      title: t('about.ph_title'),
       icon: <FaWater className="text-3xl text-cyan-600" />,
-      description: 'Soil pH affects nutrient availability. Most crops prefer pH between 6.0-7.5. Lime is used to raise pH (reduce acidity), while sulfur can lower pH (increase acidity).',
-      keyPoints: [
-        'Optimal range: 6.0-7.5',
-        'Affects nutrient availability',
-        'Can be adjusted with amendments',
-        'Regular testing recommended'
-      ]
+      description: t('about.ph_desc'),
+      keyPoints: t('about.ph_points', { returnObjects: true })
     },
     {
-      title: 'Moisture Management',
+      title: t('about.moisture_title'),
       icon: <FaWater className="text-3xl text-blue-500" />,
-      description: 'Proper soil moisture is essential for nutrient uptake. Optimal moisture ranges from 40-60%. Both drought and waterlogging can affect fertilizer efficiency.',
-      keyPoints: [
-        'Optimal range: 40-60%',
-        'Affects nutrient uptake',
-        'Influences fertilizer efficiency',
-        'Requires proper irrigation'
-      ]
+      description: t('about.moisture_desc'),
+      keyPoints: t('about.moisture_points', { returnObjects: true })
     },
     {
-      title: 'Temperature Considerations',
+      title: t('about.temp_title'),
       icon: <FaThermometerHalf className="text-3xl text-red-600" />,
-      description: 'Soil temperature affects microbial activity and nutrient availability. Most crops grow best between 15-30°C. Temperature influences fertilizer breakdown and uptake rates.',
-      keyPoints: [
-        'Optimal range: 15-30°C',
-        'Affects microbial activity',
-        'Influences nutrient release',
-        'Seasonal variations important'
-      ]
+      description: t('about.temp_desc'),
+      keyPoints: t('about.temp_points', { returnObjects: true })
     },
     {
-      title: 'Crop-Specific Requirements',
+      title: t('about.crop_title'),
       icon: <FaSeedling className="text-3xl text-yellow-600" />,
-      description: 'Different crops have varying nutrient requirements at different growth stages. Understanding crop-specific needs helps optimize fertilizer application timing and amounts.',
-      keyPoints: [
-        'Varies by crop type',
-        'Growth stage dependent',
-        'Timing is crucial',
-        'Customized recommendations needed'
-      ]
+      description: t('about.crop_desc'),
+      keyPoints: t('about.crop_points', { returnObjects: true })
     },
     {
-      title: 'Sustainable Fertilizer Practices',
+      title: t('about.sustainable_title'),
       icon: <FaLeaf className="text-3xl text-emerald-600" />,
-      description: 'Sustainable practices include soil testing, precision application, crop rotation, and organic amendments. These practices reduce environmental impact while maintaining productivity.',
-      keyPoints: [
-        'Regular soil testing',
-        'Precision application',
-        'Crop rotation',
-        'Long-term soil health focus'
-      ]
+      description: t('about.sustainable_desc'),
+      keyPoints: t('about.sustainable_points', { returnObjects: true })
     }
+  ];
+
+  const bestPractices = [
+    { title: t('about.before_app'), points: t('about.before_points', { returnObjects: true }) },
+    { title: t('about.during_app'), points: t('about.during_points', { returnObjects: true }) },
+    { title: t('about.after_app'), points: t('about.after_points', { returnObjects: true }) },
+    { title: t('about.env_cons'), points: t('about.env_points', { returnObjects: true }) }
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h1 className="text-4xl font-bold mb-4">About Fertilizers</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('about.title')}</h1>
           <p className="text-xl text-primary-100">
-            Comprehensive guide to fertilizers and soil management
+            {t('about.subtitle')}
           </p>
         </div>
       </div>
@@ -138,7 +98,7 @@ const About = () => {
                   <h2 className="text-2xl font-bold text-gray-800 mb-2">{item.title}</h2>
                   <p className="text-gray-600 mb-4">{item.description}</p>
                   <ul className="space-y-2">
-                    {item.keyPoints.map((point, idx) => (
+                    {Array.isArray(item.keyPoints) && item.keyPoints.map((point, idx) => (
                       <li key={idx} className="flex items-start space-x-2 text-gray-700">
                         <span className="text-primary-600 mt-1">•</span>
                         <span>{point}</span>
@@ -152,48 +112,21 @@ const About = () => {
         </div>
 
         <div className="mt-12 bg-white rounded-lg shadow-md p-8">
-          <h2 className="text-3xl font-bold mb-6 text-gray-800">Best Practices</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="text-xl font-semibold mb-3 text-primary-600">Before Application</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li>✓ Conduct soil testing to determine nutrient levels</li>
-                <li>✓ Check weather conditions (avoid rain forecasts)</li>
-                <li>✓ Calculate correct application rates</li>
-                <li>✓ Ensure proper storage of fertilizers</li>
-                <li>✓ Use appropriate protective equipment</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-3 text-primary-600">During Application</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li>✓ Apply at correct growth stages</li>
-                <li>✓ Use calibrated equipment</li>
-                <li>✓ Ensure even distribution</li>
-                <li>✓ Avoid application near water bodies</li>
-                <li>✓ Follow recommended timing</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-3 text-primary-600">After Application</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li>✓ Monitor crop response</li>
-                <li>✓ Keep application records</li>
-                <li>✓ Test soil periodically</li>
-                <li>✓ Adjust practices based on results</li>
-                <li>✓ Maintain soil health</li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-semibold mb-3 text-primary-600">Environmental Considerations</h3>
-              <ul className="space-y-2 text-gray-700">
-                <li>✓ Prevent runoff into water bodies</li>
-                <li>✓ Use buffer zones near sensitive areas</li>
-                <li>✓ Consider organic alternatives</li>
-                <li>✓ Practice crop rotation</li>
-                <li>✓ Support biodiversity</li>
-              </ul>
-            </div>
+          <h2 className="text-3xl font-bold mb-6 text-gray-800">{t('about.best_practices')}</h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            {bestPractices.map((section, index) => (
+              <div key={index}>
+                <h3 className="text-xl font-semibold mb-3 text-primary-600">{section.title}</h3>
+                <ul className="space-y-2 text-gray-700">
+                  {Array.isArray(section.points) && section.points.map((point, idx) => (
+                    <li key={idx} className="flex items-start space-x-2">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
       </div>

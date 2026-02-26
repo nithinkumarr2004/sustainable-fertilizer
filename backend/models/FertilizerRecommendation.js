@@ -47,6 +47,19 @@ const fertilizerRecommendationSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+  feedback: {
+    isHelpful: {
+      type: Boolean,
+      default: null
+    },
+    feedbackText: {
+      type: String,
+      trim: true
+    },
+    updatedAt: {
+      type: Date
+    }
   }
 });
 

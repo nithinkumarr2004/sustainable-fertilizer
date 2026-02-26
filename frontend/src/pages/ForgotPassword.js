@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { FaEnvelope, FaLeaf, FaArrowLeft } from 'react-icons/fa';
 
 const ForgotPassword = () => {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const [resetInfo, setResetInfo] = useState(null);
-  const navigate = useNavigate();
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,10 +21,10 @@ const ForgotPassword = () => {
 
     try {
       const response = await api.post('/auth/forgot-password', { email });
-      
+
       if (response.data.success) {
         setSuccess(response.data.message);
-        
+
         // In development, show the reset token and URL
         if (response.data.resetToken) {
           setResetInfo({
@@ -31,11 +33,11 @@ const ForgotPassword = () => {
           });
         }
       } else {
-        setError(response.data.message || 'Failed to process request');
+        setError(response.data.message || t('auth.error_invalid'));
       }
     } catch (err) {
       console.error('Forgot password error:', err);
-      
+
       // Provide more detailed error messages
       if (err.code === 'ECONNREFUSED' || err.message.includes('Network Error')) {
         setError('Cannot connect to server. Please make sure the backend server is running on port 3000.');
@@ -46,7 +48,7 @@ const ForgotPassword = () => {
         // Request was made but no response received
         setError('No response from server. Please check your connection and try again.');
       } else {
-        setError(err.message || 'Failed to send reset email. Please try again.');
+        setError(err.message || t('auth.error_reg_failed'));
       }
     }
 
@@ -62,9 +64,9 @@ const ForgotPassword = () => {
               <FaLeaf className="text-white text-3xl" />
             </div>
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Forgot Password</h2>
+          <h2 className="text-3xl font-bold text-gray-900">{t('auth.forgot_password')}</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Enter your email address and we'll send you a link to reset your password
+            {t('auth.forgot_subtitle')}
           </p>
         </div>
 
@@ -91,7 +93,7 @@ const ForgotPassword = () => {
                 to="/login"
                 className="text-primary-600 hover:text-primary-700 font-medium text-sm"
               >
-                Back to Login
+                {t('auth.back_to_login')}
               </Link>
             </div>
           </div>
@@ -101,7 +103,7 @@ const ForgotPassword = () => {
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email Address
+                {t('auth.email')}
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -127,7 +129,7 @@ const ForgotPassword = () => {
                 disabled={loading}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Sending...' : 'Send Reset Link'}
+                {loading ? t('auth.sending') : t('auth.send_reset')}
               </button>
             </div>
 
@@ -137,7 +139,7 @@ const ForgotPassword = () => {
                 className="inline-flex items-center text-sm font-medium text-primary-600 hover:text-primary-500"
               >
                 <FaArrowLeft className="mr-2" />
-                Back to Login
+                {t('auth.back_to_login')}
               </Link>
             </div>
           </form>
