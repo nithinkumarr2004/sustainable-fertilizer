@@ -21,9 +21,9 @@ build/
 *.pyc
 __pycache__/
 
-# AI Models (They are large, usually not committed)
-ai-model/*.pkl
-ai-model/soil_fertilizer_dataset.csv
+# AI Models (Included for cloud deployment)
+# ai-model/*.pkl
+# ai-model/soil_fertilizer_dataset.csv
 
 # Logs
 npm-debug.log*
